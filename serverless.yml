@@ -1,0 +1,52 @@
+# serverless.yml
+  
+service: fn-rest-api
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 128
+  timeout: 30
+  stage: dev
+  region: us-east-1
+      
+        
+functions:
+  create:
+    handler: src/index.create
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+  getOne:
+    handler: src/index.getOne
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors: true
+  getAll:
+    handler: src/index.getAll
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+  update:
+    handler: src/index.update
+    events:
+      - http:
+          path: users
+          method: put
+          cors: true
+  delete:
+    handler: src/index.delete
+    events:
+      - http:
+          path: users/{id}
+          method: delete
+          cors: true
+
+plugins:
+  - serverless-offline
