@@ -8,5 +8,5 @@ mongoose.connect(uri,
         useUnifiedTopology: true
     }
 )
-.then(db => console.log("Conectado a la DB"))
+.then(db => console.log("Conectado a la DB", mongoose.connection.readyState))
 .catch(err => console.log("Error al conectar a la DB:",err));
