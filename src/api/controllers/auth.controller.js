@@ -44,19 +44,70 @@ exports.postSignup = async (req, res) => {
 exports.postLogin = async (req, res) => {
     try {
         const { error } = loginValidation(req.query);
-        if (error) return res.status(400).send({message:error.details[0].message});
+        if (error) return res.status(200).send({
+            success: 'false',
+            meta: {
+                status: {
+                    code: '01',
+                    message_ilgn: [{
+                        locale: 'es_PE',
+                        value: error.details[0].message
+                    }]
+                }
+            }});
+
 
         //Revisando si hay duplicidad
         const { email, password } = req.query
         const user = await UserModel.findOne({email});
-        if (!user) return res.status(200).send({message:`El usuario no existe.`});
+
+        if (!user) return res.status(200).send({
+            success: 'false',
+            meta: {
+                status: {
+                    code: '01',
+                    message_ilgn: [{
+                        locale: 'es_PE',
+                        value: 'El usuario no existe.'
+                    }]
+                }
+            }
+        });
         //PASSWORD IS CORRECT
         const validPass = await bcrypt.compare(password, user.password);
-        if (!validPass) return res.status(200).send({message:'Contrase�a incorrecta.'})
         
+        if (!validPass) return res.status(200).send({
+            success: 'false',
+            meta: {
+                status: {
+                    code: '01',
+                    message_ilgn: [{
+                        locale: 'es_PE',
+                        value: 'Contraseña incorrecta.'
+                    }]
+                }
+            }
+        })
+
         const token = jwt.sign({_id: user._id}, process.env.ACCESS_KEY)
-        const name = user.name;
-        res.status(200).send({token,name,message:'LoggedIn'});
+        res.status(200).send({
+            success: 'true',
+            data: {
+                token: token,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            },
+            meta: {
+                status: {
+                    code: '00',
+                    message_ilgn: [{
+                        locale: 'es_PE',
+                        value: 'El usuario ingreso correctamente.'
+                    }]
+                }
+            }
+        });
     } catch (error) {
         res.status(500);
         res.send(error.message)
