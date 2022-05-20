@@ -118,7 +118,7 @@ exports.deleteLogout = (req, res) => {
     try {
         const refreshToken = req.header("x-auth-token");
   
-        refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+        let refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
         res.sendStatus(204);
     } catch (error) {
         res.status(500);
